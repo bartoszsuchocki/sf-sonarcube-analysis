@@ -1,0 +1,56 @@
+
+<?xml version="1.0" encoding="UTF-8"?>
+<Package xmlns="http://soap.sforce.com/2006/04/metadata">
+    <types>
+        <members>CaseService</members>
+        <members>CaseServiceTest</members>
+        <name>ApexClass</name>
+    </types>
+    <types>
+        <members>Contact-Contact Layout</members>
+        <name>Layout</name>
+    </types>
+    <types>
+        <members>Training__c</members>
+        <name>CustomObject</name>
+    </types>
+    <types>
+        <members>Contact.Category__c</members>
+        <name>CustomField</name>
+    </types>
+    <types>
+        <members>Training__c-de</members>
+        <name>CustomObjectTranslation</name>
+    </types>
+    <types>
+        <members>*</members>
+        <name>CustomLabels</name>
+    </types>
+
+    <types>
+        <members>de</members>
+        <name>Translations</name>
+    </types>
+
+    <types>
+        <members>sampleLwc</members>
+        <name>LightningComponentBundle</name>
+    </types>
+
+    <types>
+        <members>SampleAura</members>
+        <name>AuraDefinitionBundle</name>
+	</types>
+
+    <types>
+        <members>Standard Employee</members>
+        <name>Profile</name>
+	</types>
+
+    <types>
+        <members>SampleResource</members>
+        <name>StaticResource</name>
+    </types>
+
+    <version>54.0</version>
+</Package>

@@ -1,0 +1,23 @@
+version: 2.1
+
+jobs:
+  deploy-devint: 
+    docker: 
+      - image: circleci/node:latest
+    steps:
+      - checkout 
+      - run:
+          name: Install Dependencies
+          command: . ./build-scripts/installDependencies.sh
+      - run: sfdx --version
+      - run:
+          name: Authorize Integration Org
+          command: . ./build-scripts/authorizeOrgByUrl.sh "$PLAYGROUNG_CI_TRAINING_URL" integration-org
+      - run:
+          name: Deploy to dev integration org
+          command: sfdx force:source:deploy -x "./manifest/package.xml" --targetusername integration-org --testlevel RunLocalTests
+
+workflows:
+  test-workflow:
+    jobs:
+      - deploy-devint
