@@ -71,7 +71,7 @@ jobs:
         
       run: |
         echo $client_id
-        echo $private_key
+        echo $private_key | base64 -d
         echo $username
         . ./scripts/ci/authorize_org.sh $client_id $private_key $username integration_org
 
