@@ -69,7 +69,7 @@ jobs:
         # username: ${{secrets.INTEGRATION_USERNAME}}
       run: |
         mkdir auth_files
-        echo ${{secrets.PRIVATE_KEY}} > auth_files/private_key2_enc.key
+        echo $private_key > auth_files/private_key2_enc.key
         cat auth_files/private_key2_enc.key | base64 -d > auth_files/private_key2.key
         sfdx auth:jwt:grant --clientid 3MVG9GXbtnGKjXe5BC9JgPWl1YgO2f4oaXGypHk.hasCX2I.CRSw0Ju1ez22cllC.T2l5tVnwAlxjH6wCXCAu --jwtkeyfile ./auth_files/private_key2.key --username ciintegrationtmp@craftware.biz --setalias jwt-auth-org --instanceurl https://test.salesforce.com
         # sfdx auth:jwt:grant --clientid 3MVG9GXbtnGKjXe5BC9JgPWl1YgO2f4oaXGypHk.hasCX2I.CRSw0Ju1ez22cllC.T2l5tVnwAlxjH6wCXCAu --jwtkeyfile ./auth_files/private_key.key --username ciintegrationtmp@craftware.biz --setalias jwt-auth-org2 --instanceurl https://test.salesforce.com
