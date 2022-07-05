@@ -14,4 +14,4 @@ instance_url=$5
 
 mkdir auth_files
 echo $private_key | base64 -d > auth_files/private_key.key
-sfdx auth:jwt:grant --clientid $client_id --jwtkeyfile auth_files/private_key.key --username $username --setalias $org_alias --instance_url=$instance_url
+sfdx auth:jwt:grant --clientid $client_id --jwtkeyfile auth_files/private_key.key --username $username --setalias $org_alias --instanceurl=$instance_url
