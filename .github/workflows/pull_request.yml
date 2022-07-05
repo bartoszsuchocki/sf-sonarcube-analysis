@@ -64,11 +64,21 @@ jobs:
     - if: ${{ steps.deploy_need_check.outputs.deploy_needed == 'true' }}
       name: Authorize integration org
       env: 
-        auth_url: ${{secrets.PLAYGROUNG_CI_TRAINING_URL}}
-      run: . ./scripts/ci/authorize_org.sh $auth_url integration_org
-
+        client_id: ${{secrets.CLIENT_ID_DEVELOP}}
+        private_key: ${{secrets.PRIVATE_KEY_DEVELOP}} 
+        username: ${{secrets.USERNAME_DEVELOP}}
+        instance_url: https://test.salesforce.com
+      run: |
+        # mkdir auth_files
+        . ./scripts/ci/authorize_org.sh $client_id $private_key $username integration_org $instance_url
+        #echo $private_key > auth_files/private_key_enc.key
+        #cat auth_files/private_key_enc.key | base64 -d > auth_files/private_key.key
+        #sfdx auth:jwt:grant --clientid $client_id --jwtkeyfile ./auth_files/private_key.key --username $username --setalias integration-org --instanceurl https://test.salesforce.com
+        # sfdx auth:jwt:grant --clientid 3MVG9GXbtnGKjXe5BC9JgPWl1YgO2f4oaXGypHk.hasCX2I.CRSw0Ju1ez22cllC.T2l5tVnwAlxjH6wCXCAu --jwtkeyfile ./auth_files/private_key.key --username ciintegrationtmp@craftware.biz --setalias jwt-auth-org2 --instanceurl https://test.salesforce.com
+        
+   
     - if: ${{ steps.deploy_need_check.outputs.deploy_needed == 'true' }}
-      id: extract_tests
+      id: extract_tests 
       name: 'Extract tests for changed classes'
       run: |
         specified_tests=$(chmod u+x ./scripts/ci/extract_tests_for_apex_classes.sh; echo $(./scripts/ci/extract_tests_for_apex_classes.sh ./delta_deploy/force-app/main/default) )
