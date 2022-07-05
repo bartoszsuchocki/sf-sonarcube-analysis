@@ -17,7 +17,6 @@ env:
                           
 jobs:
   validate:
-    environment: DEVINT
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
@@ -65,12 +64,12 @@ jobs:
     #  if: ${{ steps.deploy_need_check.outputs.deploy_needed == 'true' }}
     - name: Authorize integration org
       env: 
-        client_id: ${{secrets.CLIENT_ID}}
+        # client_id: ${{secrets.CLIENT_ID}}
         private_key: ${{secrets.PRIVATE_KEY}} 
-        username: ${{secrets.INTEGRATION_USERNAME}}
+        # username: ${{secrets.INTEGRATION_USERNAME}}
       run: |
         mkdir auth_files
-        echo "$private_key" > auth_files/private_key2_enc.key
+        echo ${{secrets.PRIVATE_KEY}} > auth_files/private_key2_enc.key
         cat auth_files/private_key2_enc.key | base64 -d > auth_files/private_key2.key
         
     # echo ${{secrets.CERTIFICATE_PRIVATE_KEY}} | base64 -d > auth_files/private_key2.key
