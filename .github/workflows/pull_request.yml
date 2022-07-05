@@ -69,7 +69,7 @@ jobs:
         username: ${{secrets.USERNAME_DEVELOP}}
         instance_url: https://test.salesforce.com
       run: |
-        mkdir auth_files
+        # mkdir auth_files
         . ./scripts/ci/authorize_org.sh $client_id $private_key $username $instance_url
         #echo $private_key > auth_files/private_key_enc.key
         #cat auth_files/private_key_enc.key | base64 -d > auth_files/private_key.key
