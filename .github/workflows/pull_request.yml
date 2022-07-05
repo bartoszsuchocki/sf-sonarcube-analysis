@@ -17,6 +17,7 @@ env:
                           
 jobs:
   validate:
+    environment: DEVINT
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
@@ -39,45 +40,47 @@ jobs:
     - name: Add SFDX to PATH
       run: echo "$HOME/sfdx/bin" >> $GITHUB_PATH
 
-    - name: Generate delta deploy package.xml
-      run: |
-        mkdir delta_deploy
-        sfdx sgd:source:delta --to "HEAD" --from "origin/${{github.event.pull_request.base.ref}}" --source ./force-app/main/default --output ./delta_deploy --generate-delta
-        echo "Generated the following delta: "
-        ls ./delta_deploy
-        echo "Package xml: "
-        cat ./delta_deploy/package/package.xml
-        echo "Destructive changes xml:"
-        cat ./delta_deploy/destructiveChanges/destructiveChanges.xml
+    # - name: Generate delta deploy package.xml
+    #   run: |
+    #     mkdir delta_deploy
+    #     sfdx sgd:source:delta --to "HEAD" --from "origin/${{github.event.pull_request.base.ref}}" --source ./force-app/main/default --output ./delta_deploy --generate-delta
+    #     echo "Generated the following delta: "
+    #     ls ./delta_deploy
+    #     echo "Package xml: "
+    #     cat ./delta_deploy/package/package.xml
+    #     echo "Destructive changes xml:"
+    #     cat ./delta_deploy/destructiveChanges/destructiveChanges.xml
 
-    - name: Check if deploy is needed
-      id: deploy_need_check
-      run: |
-        if grep -q '<types>' ./delta_deploy/package/package.xml ; then
-          echo "There are changes to deploy"
-          echo "::set-output name=deploy_needed::true"
-        else
-          echo "::set-output name=deploy_needed::false"
-          echo "There are no changes to deploy."
-        fi
+    # - name: Check if deploy is needed
+    #   id: deploy_need_check
+    #   run: |
+    #     if grep -q '<types>' ./delta_deploy/package/package.xml ; then
+    #       echo "There are changes to deploy"
+    #       echo "::set-output name=deploy_needed::true"
+    #     else
+    #       echo "::set-output name=deploy_needed::false"
+    #       echo "There are no changes to deploy."
+    #     fi
         
-    - if: ${{ steps.deploy_need_check.outputs.deploy_needed == 'true' }}
-      name: Authorize integration org
+    #  if: ${{ steps.deploy_need_check.outputs.deploy_needed == 'true' }}
+    - name: Authorize integration org
       env: 
-        auth_url: ${{secrets.PLAYGROUNG_CI_TRAINING_URL}}
-      run: . ./scripts/ci/authorize_org.sh $auth_url integration_org
+        client_id: ${{secrets.CLIENT_ID}}
+        private_key: ${{secrets.CERTIFICATE_PRIVATE_KEY}} 
+        username: ${{secrets.INTEGRATION_USERNAME}}
+      run: . ./scripts/ci/authorize_org.sh $client_id $private_key $username integration_org
 
-    - if: ${{ steps.deploy_need_check.outputs.deploy_needed == 'true' }}
-      id: extract_tests
-      name: 'Extract tests for changed classes'
-      run: |
-        specified_tests=$(chmod u+x ./scripts/ci/extract_tests_for_apex_classes.sh; echo $(./scripts/ci/extract_tests_for_apex_classes.sh ./delta_deploy/force-app/main/default) )
-        echo "Tests to run: $specified_tests"
-        echo "::set-output name=specified_tests::$specified_tests"
+    # - if: ${{ steps.deploy_need_check.outputs.deploy_needed == 'true' }}
+    #   id: extract_tests
+    #   name: 'Extract tests for changed classes'
+    #   run: |
+    #     specified_tests=$(chmod u+x ./scripts/ci/extract_tests_for_apex_classes.sh; echo $(./scripts/ci/extract_tests_for_apex_classes.sh ./delta_deploy/force-app/main/default) )
+    #     echo "Tests to run: $specified_tests"
+    #     echo "::set-output name=specified_tests::$specified_tests"
 
-    - if: ${{ steps.deploy_need_check.outputs.deploy_needed == 'true' }}
-      name: Validate deployment to dev integration org
-      run: |
-        sfdx force:source:deploy -x "./delta_deploy/package/package.xml" --targetusername integration_org \
-          --postdestructivechanges="./delta_deploy/destructiveChanges/destructiveChanges.xml" \
-          --testlevel RunSpecifiedTests -r ${{steps.extract_tests.outputs.specified_tests}} --checkonly --verbose
+    # - if: ${{ steps.deploy_need_check.outputs.deploy_needed == 'true' }}
+    #   name: Validate deployment to dev integration org
+    #   run: |
+    #     sfdx force:source:deploy -x "./delta_deploy/package/package.xml" --targetusername integration_org \
+    #       --postdestructivechanges="./delta_deploy/destructiveChanges/destructiveChanges.xml" \
+    #       --testlevel RunSpecifiedTests -r ${{steps.extract_tests.outputs.specified_tests}} --checkonly --verbose

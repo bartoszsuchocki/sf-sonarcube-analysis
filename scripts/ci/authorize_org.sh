@@ -1,14 +1,28 @@
-if [ $# -ne 2 ]
+if [ $# -ne 4 ]
     then 
-        echo 'Authorization URL and Org Alias should be provided!'
+        echo $#
+        echo 'Connected app client id, certificate private key, integration username and desired org alias should be provided'
         exit 1
 fi
 
-authorization_url=$1
-org_alias=$2
 
-mkdir auth
-echo $authorization_url > auth/auth_org_file.txt
-sfdx auth:sfdxurl:store -f auth/auth_org_file.txt -a $org_alias
+client_id=$1
+private_key=$2
+username=$3
+org_alias=$4
 
-echo "Authorized $org_alias successfully"
+echo "This is your client id: "
+echo $client_id
+
+echo "This is your username: "
+echo $username
+
+echo "This is your alias: "
+echo $org_alias
+
+echo "This is your private key: "
+echo $private_key
+
+mkdir auth_files
+echo $private_key > auth_files/private_key.key
+sfdx auth:jwt:grant --clientid $client_id --jwtkeyfile auth_files/private_key.key --username $username --setalias $org_alias
