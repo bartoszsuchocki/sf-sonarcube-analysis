@@ -70,7 +70,7 @@ jobs:
         instance_url: https://test.salesforce.com
       run: |
         # mkdir auth_files
-        . ./scripts/ci/authorize_org.sh $client_id $private_key $username integration-org $instance_url
+        . ./scripts/ci/authorize_org.sh $client_id $private_key $username integration_org $instance_url
         #echo $private_key > auth_files/private_key_enc.key
         #cat auth_files/private_key_enc.key | base64 -d > auth_files/private_key.key
         #sfdx auth:jwt:grant --clientid $client_id --jwtkeyfile ./auth_files/private_key.key --username $username --setalias integration-org --instanceurl https://test.salesforce.com
