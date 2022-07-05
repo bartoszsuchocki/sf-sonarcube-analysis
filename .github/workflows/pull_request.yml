@@ -68,7 +68,12 @@ jobs:
         client_id: ${{secrets.CLIENT_ID}}
         private_key: ${{secrets.CERTIFICATE_PRIVATE_KEY}} 
         username: ${{secrets.INTEGRATION_USERNAME}}
-      run: . ./scripts/ci/authorize_org.sh $client_id $private_key $username integration_org
+        
+      run: |
+        echo $client_id
+        echo $private_key
+        echo $username
+        . ./scripts/ci/authorize_org.sh $client_id $private_key $username integration_org
 
     # - if: ${{ steps.deploy_need_check.outputs.deploy_needed == 'true' }}
     #   id: extract_tests 
