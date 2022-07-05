@@ -70,7 +70,7 @@ jobs:
         username: ${{secrets.INTEGRATION_USERNAME}}
       run: |
         mkdir auth_files
-        echo $private_key > auth_files/private_key2_enc.key
+        echo "$private_key" > auth_files/private_key2_enc.key
         cat auth_files/private_key2_enc.key | base64 -d > auth_files/private_key2.key
         
     # echo ${{secrets.CERTIFICATE_PRIVATE_KEY}} | base64 -d > auth_files/private_key2.key
