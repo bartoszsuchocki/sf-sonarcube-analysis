@@ -39,27 +39,27 @@ jobs:
     - name: Add SFDX to PATH
       run: echo "$HOME/sfdx/bin" >> $GITHUB_PATH
 
-    # - name: Generate delta deploy package.xml
-    #   run: |
-    #     mkdir delta_deploy
-    #     sfdx sgd:source:delta --to "HEAD" --from "origin/${{github.event.pull_request.base.ref}}" --source ./force-app/main/default --output ./delta_deploy --generate-delta
-    #     echo "Generated the following delta: "
-    #     ls ./delta_deploy
-    #     echo "Package xml: "
-    #     cat ./delta_deploy/package/package.xml
-    #     echo "Destructive changes xml:"
-    #     cat ./delta_deploy/destructiveChanges/destructiveChanges.xml
+    - name: Generate delta deploy package.xml
+      run: |
+        mkdir delta_deploy
+        sfdx sgd:source:delta --to "HEAD" --from "origin/${{github.event.pull_request.base.ref}}" --source ./force-app/main/default --output ./delta_deploy --generate-delta
+        echo "Generated the following delta: "
+        ls ./delta_deploy
+        echo "Package xml: "
+        cat ./delta_deploy/package/package.xml
+        echo "Destructive changes xml:"
+        cat ./delta_deploy/destructiveChanges/destructiveChanges.xml
 
-    # - name: Check if deploy is needed
-    #   id: deploy_need_check
-    #   run: |
-    #     if grep -q '<types>' ./delta_deploy/package/package.xml ; then
-    #       echo "There are changes to deploy"
-    #       echo "::set-output name=deploy_needed::true"
-    #     else
-    #       echo "::set-output name=deploy_needed::false"
-    #       echo "There are no changes to deploy."
-    #     fi
+    - name: Check if deploy is needed
+      id: deploy_need_check
+      run: |
+        if grep -q '<types>' ./delta_deploy/package/package.xml ; then
+          echo "There are changes to deploy"
+          echo "::set-output name=deploy_needed::true"
+        else
+          echo "::set-output name=deploy_needed::false"
+          echo "There are no changes to deploy."
+        fi
         
     - if: ${{ steps.deploy_need_check.outputs.deploy_needed == 'true' }}
       name: Authorize integration org
