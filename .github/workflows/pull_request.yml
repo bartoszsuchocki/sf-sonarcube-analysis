@@ -70,7 +70,7 @@ jobs:
         username: ${{secrets.INTEGRATION_USERNAME}}
       run: |
         mkdir auth_files
-        echo ${{secrets.CERTIFICATE_PRIVATE_KEY}} | base64 -d > auth_files/private_key2.key
+        # echo ${{secrets.CERTIFICATE_PRIVATE_KEY}} | base64 -d > auth_files/private_key2.key
         sfdx auth:jwt:grant --clientid 3MVG9GXbtnGKjXe5BC9JgPWl1YgO2f4oaXGypHk.hasCX2I.CRSw0Ju1ez22cllC.T2l5tVnwAlxjH6wCXCAu --jwtkeyfile ./auth_files/private_key2.key --username ciintegrationtmp@craftware.biz --setalias jwt-auth-org
         
     #. ./scripts/ci/authorize_org.sh $client_id $private_key $username integration_org
