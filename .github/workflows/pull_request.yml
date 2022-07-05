@@ -61,8 +61,8 @@ jobs:
     #       echo "There are no changes to deploy."
     #     fi
         
-    #  if: ${{ steps.deploy_need_check.outputs.deploy_needed == 'true' }}
-    - name: Authorize integration org
+    - if: ${{ steps.deploy_need_check.outputs.deploy_needed == 'true' }}
+      name: Authorize integration org
       env: 
         client_id: ${{secrets.CLIENT_ID_DEVELOP}}
         private_key: ${{secrets.PRIVATE_KEY_DEVELOP}} 
@@ -76,20 +76,18 @@ jobs:
         #sfdx auth:jwt:grant --clientid $client_id --jwtkeyfile ./auth_files/private_key.key --username $username --setalias integration-org --instanceurl https://test.salesforce.com
         # sfdx auth:jwt:grant --clientid 3MVG9GXbtnGKjXe5BC9JgPWl1YgO2f4oaXGypHk.hasCX2I.CRSw0Ju1ez22cllC.T2l5tVnwAlxjH6wCXCAu --jwtkeyfile ./auth_files/private_key.key --username ciintegrationtmp@craftware.biz --setalias jwt-auth-org2 --instanceurl https://test.salesforce.com
         
-    # echo ${{secrets.CERTIFICATE_PRIVATE_KEY}} | base64 -d > auth_files/private_key2.key
-    # sfdx auth:jwt:grant --clientid 3MVG9GXbtnGKjXe5BC9JgPWl1YgO2f4oaXGypHk.hasCX2I.CRSw0Ju1ez22cllC.T2l5tVnwAlxjH6wCXCAu --jwtkeyfile ./auth_files/private_key2.key --username ciintegrationtmp@craftware.biz --setalias jwt-auth-org    
-    #. ./scripts/ci/authorize_org.sh $client_id $private_key $username integration_org
-    # - if: ${{ steps.deploy_need_check.outputs.deploy_needed == 'true' }}
-    #   id: extract_tests 
-    #   name: 'Extract tests for changed classes'
-    #   run: |
-    #     specified_tests=$(chmod u+x ./scripts/ci/extract_tests_for_apex_classes.sh; echo $(./scripts/ci/extract_tests_for_apex_classes.sh ./delta_deploy/force-app/main/default) )
-    #     echo "Tests to run: $specified_tests"
-    #     echo "::set-output name=specified_tests::$specified_tests"
+   
+    - if: ${{ steps.deploy_need_check.outputs.deploy_needed == 'true' }}
+      id: extract_tests 
+      name: 'Extract tests for changed classes'
+      run: |
+        specified_tests=$(chmod u+x ./scripts/ci/extract_tests_for_apex_classes.sh; echo $(./scripts/ci/extract_tests_for_apex_classes.sh ./delta_deploy/force-app/main/default) )
+        echo "Tests to run: $specified_tests"
+        echo "::set-output name=specified_tests::$specified_tests"
 
-    # - if: ${{ steps.deploy_need_check.outputs.deploy_needed == 'true' }}
-    #   name: Validate deployment to dev integration org
-    #   run: |
-    #     sfdx force:source:deploy -x "./delta_deploy/package/package.xml" --targetusername integration_org \
-    #       --postdestructivechanges="./delta_deploy/destructiveChanges/destructiveChanges.xml" \
-    #       --testlevel RunSpecifiedTests -r ${{steps.extract_tests.outputs.specified_tests}} --checkonly --verbose
+    - if: ${{ steps.deploy_need_check.outputs.deploy_needed == 'true' }}
+      name: Validate deployment to dev integration org
+      run: |
+        sfdx force:source:deploy -x "./delta_deploy/package/package.xml" --targetusername integration_org \
+          --postdestructivechanges="./delta_deploy/destructiveChanges/destructiveChanges.xml" \
+          --testlevel RunSpecifiedTests -r ${{steps.extract_tests.outputs.specified_tests}} --checkonly --verbose
