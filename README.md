@@ -1,1 +1,1 @@
-Almost empty SF project to learn SonarCube
+Barely empty SF project to learn SonarCube
