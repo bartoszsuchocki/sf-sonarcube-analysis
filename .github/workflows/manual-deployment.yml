@@ -1,0 +1,53 @@
+name: Validate Feature PR
+
+on:
+  workflow_dispatch:
+    branches:
+      - main
+      - stable
+      - dev
+      - feature/MGP-463
+
+concurrency:
+  group: ${{github.workflow}}--${{github.ref}}
+  cancel-in-progress: false
+
+env:
+  SF_CLI_INSTALLATION_URL: 'https://developer.salesforce.com/media/salesforce-cli/sf/channels/stable/sf-linux-x64.tar.xz'
+
+jobs:
+  deploy:
+    name: Deploy Changes to Target Org
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+      with:
+        fetch-depth: 0
+
+    - name: Cache SF CLI
+      id: cache_sf_cli
+      uses: actions/cache@v3
+      with:
+        path: |
+          ~/cli/sf
+          ~/.local/share/sf
+        key: sf_cli_stable
+
+    - if: ${{ steps.cache_sf_cli.outputs.cache-hit != 'true' }}
+      name: Install SF CLI Dependencies
+      run: . ./scripts/ci/install_sfcli_dependencies.sh $SF_CLI_INSTALLATION_URL
+    
+    - name: Add SF CLI to PATH
+      run: echo "$HOME/cli/sf/bin" >> $GITHUB_PATH
+        
+    - name: Authorize Target Org
+      env: 
+        auth_url: ${{ secrets['AUTH_URL_dev'] }} #${{ secrets[format('AUTH_URL_{0}', github.base_ref)] }}
+      run: . ./scripts/ci/authorize_org.sh $auth_url target_org
+   
+    - name: Deploy Changes
+      run: |
+        sf project deploy start --manifest ./changed_metadata/package/package.xml --target-org target_org \
+          --pre-destructive-changes ./destructive-changes/preDestructiveChanges.xml \
+          --post-destructive-changes ./destructive-changes/postDestructiveChanges.xml \
+          --test-level RunLocalTests --ignore-conflicts --ignore-warnings
