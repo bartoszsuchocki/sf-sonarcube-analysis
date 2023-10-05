@@ -1,4 +1,4 @@
-name: Validate Feature PR
+name: Deploy All Metadata Manually
 
 on:
   workflow_dispatch:
